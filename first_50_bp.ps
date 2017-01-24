@@ -1,0 +1,19 @@
+def process_rec(seqRec):
+  global getReadyforSequence
+  seqId=seqRec[:4]
+  if seqId == "@HWI":
+     resultFile.write(seqRec)
+     getReadyforSequence="yes"
+  elif(getReadyforSequence == "yes"):
+     first50 = seqRec[:50]
+     resultFile.write(first50)
+     resultFile.write("\n")
+     getReadyforSequence = "no"
+  return;
+
+resultFile=open("resultfile.txt","w")
+with open("miseq.fastq","rU")as input:
+  for seq in input:
+      process_rec(seq)
+print("End of process")
+    
