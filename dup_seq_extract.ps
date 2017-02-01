@@ -1,0 +1,46 @@
+# function definition to return same record for handling large data file
+def process_rec(seqRec):
+  return(seqRec);
+
+#set method allows to create an empty collections to store unlimited items/records
+keys = set()
+
+#open the output files in write mode
+dup_seq=open("dup_seqfile.txt","w")
+unq_seq=open("unq_seqfile.txt","w")
+
+#open the input file to process records
+with open("miseq.fastq","rU")as input:
+#Extracts first 4 characters of a record to identify the title record
+#If it's a title record(starting with @HWI),then store a copy in headerRead
+#if it's sequence record , then
+# 1. extract first 50 characters
+# 2. if it's a duplicate sequence,then write the sequence into duplicate file
+# 3. If it's not a duplicate sequence,then write  the sequence into unique file and add the sequence to the unlimited collections of records for duplicate checking.
+  for seq in input:
+      seqRead=process_rec(seq)
+      seqId=seqRead[:4]
+      if seqId == "@HWI":
+         headerRead=seqRead
+         getReadyforSequence="yes"
+     
+      elif(getReadyforSequence == "yes"):
+         first50 = seqRead[:50]
+         key = first50
+#check for duplicate sequences
+         if key in keys:
+            dup_seq.write(headerRead)
+            dup_seq.write(first50)
+            dup_seq.write("\n")
+         else:
+            unq_seq.write(headerRead)
+            unq_seq.write(first50)
+            unq_seq.write("\n")
+            keys.add(first50)
+         getReadyforSequence = "no"
+
+dup_seq.close()
+unq_seq.close()
+input.close
+print("End of process")
+    
